@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Research Paper Review Tokenizer</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="app">
+        <!-- Login/Register Screen -->
+        <div id="auth-screen" class="screen active">
+            <div class="auth-container">
+                <h1 class="app-title">📚 Research Review Tokenizer</h1>
+                <p class="tagline">Incentivized Peer Review Platform</p>
+                
+                <div class="auth-tabs">
+                    <button class="auth-tab active" onclick="showAuthForm('login')">Login</button>
+                    <button class="auth-tab" onclick="showAuthForm('register')">Register</button>
+                </div>
+
+                <!-- Login Form -->
+                <form id="login-form" class="auth-form active">
+                    <h2>Welcome Back!</h2>
+                    <input type="email" id="login-email" placeholder="Email" required>
+                    <input type="password" id="login-password" placeholder="Password" required>
+                    <button type="submit" class="btn btn-primary">Login</button>
+                    <div id="login-error" class="error-message"></div>
+                </form>
+
+                <!-- Register Form -->
+                <form id="register-form" class="auth-form">
+                    <h2>Create Account</h2>
+                    <input type="text" id="register-name" placeholder="Full Name" required>
+                    <input type="email" id="register-email" placeholder="Email" required>
+                    <input type="text" id="register-affiliation" placeholder="Affiliation (Optional)">
+                    <select id="register-role" required>
+                        <option value="">Select Role</option>
+                        <option value="author">Author</option>
+                        <option value="reviewer">Reviewer</option>
+                    </select>
+                    <input type="password" id="register-password" placeholder="Password" required>
+                    <button type="submit" class="btn btn-primary">Register</button>
+                    <div id="register-error" class="error-message"></div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Main Dashboard -->
+        <div id="dashboard-screen" class="screen">
+            <!-- Navigation Bar -->
+            <nav class="navbar">
+                <div class="nav-brand">📚 Review Tokenizer</div>
+                <div class="nav-user">
+                    <span id="user-name"></span>
+                    <span id="user-role" class="badge"></span>
+                    <button onclick="logout()" class="btn btn-small">Logout</button>
+                </div>
+            </nav>
+
+            <!-- Sidebar Navigation -->
+            <div class="sidebar">
+                <button class="nav-item" onclick="showSection('home')" id="nav-home">
+                    🏠 Home
+                </button>
+                <button class="nav-item" onclick="showSection('papers')" id="nav-papers">
+                    📄 Papers
+                </button>
+                <button class="nav-item" onclick="showSection('reviews')" id="nav-reviews">
+                    ✍️ Reviews
+                </button>
+                <button class="nav-item" onclick="showSection('tokens')" id="nav-tokens">
+                    🏆 My Tokens
+                </button>
+                <button class="nav-item" onclick="showSection('leaderboard')" id="nav-leaderboard">
+                    📊 Leaderboard
+                </button>
+                <button class="nav-item" onclick="showSection('profile')" id="nav-profile">
+                    👤 Profile
+                </button>
+            </div>
+
+            <!-- Main Content Area -->
+            <div class="main-content">
+                <!-- Home Section -->
+                <section id="section-home" class="content-section active">
+                    <h1>Welcome, <span id="welcome-name"></span>! 👋</h1>
+                    <div class="stats-grid" id="stats-grid">
+                        <!-- Stats will be dynamically loaded -->
+                    </div>
+                    <div id="quick-actions" class="quick-actions">
+                        <!-- Quick actions based on role -->
+                    </div>
+                </section>
+
+                <!-- Papers Section -->
+                <section id="section-papers" class="content-section">
+                    <div class="section-header">
+                        <h1>📄 Papers</h1>
+                        <button id="upload-paper-btn" class="btn btn-primary" onclick="showUploadModal()">
+                            ➕ Upload Paper
+                        </button>
+                    </div>
+                    <div id="papers-list" class="papers-grid">
+                        <!-- Papers will be loaded here -->
+                    </div>
+                </section>
+
+                <!-- Reviews Section -->
+                <section id="section-reviews" class="content-section">
+                    <h1>✍️ Reviews</h1>
+                    <div id="reviews-container">
+                        <!-- Reviews content based on role -->
+                    </div>
+                </section>
+
+                <!-- Tokens Section -->
+                <section id="section-tokens" class="content-section">
+                    <h1>🏆 My Tokens & Achievements</h1>
+                    <div id="tokens-stats" class="tokens-stats">
+                        <!-- Token stats -->
+                    </div>
+                    <div id="tokens-list" class="tokens-grid">
+                        <!-- Tokens will be loaded here -->
+                    </div>
+                </section>
+
+                <!-- Leaderboard Section -->
+                <section id="section-leaderboard" class="content-section">
+                    <h1>📊 Global Leaderboard</h1>
+                    <div class="leaderboard-container">
+                        <table id="leaderboard-table" class="leaderboard-table">
+                            <thead>
+                                <tr>
+                                    <th>Rank</th>
+                                    <th>Reviewer</th>
+                                    <th>Reviews</th>
+                                    <th>Tokens</th>
+                                    <th>Score</th>
+                                    <th>Level</th>
+                                </tr>
+                            </thead>
+                            <tbody id="leaderboard-body">
+                                <!-- Leaderboard entries -->
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <!-- Profile Section -->
+                <section id="section-profile" class="content-section">
+                    <h1>👤 My Profile</h1>
+                    <form id="profile-form" class="profile-form">
+                        <div class="form-group">
+                            <label>Name:</label>
+                            <input type="text" id="profile-name" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label>Email:</label>
+                            <input type="email" id="profile-email" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label>Affiliation:</label>
+                            <input type="text" id="profile-affiliation" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label>Role:</label>
+                            <input type="text" id="profile-role" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label>Bio:</label>
+                            <textarea id="profile-bio" rows="3"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>Expertise (comma-separated):</label>
+                            <input type="text" id="profile-expertise">
+                        </div>
+                        <div class="form-group">
+                            <label>Interests (comma-separated):</label>
+                            <input type="text" id="profile-interests">
+                        </div>
+                        <button type="submit" class="btn btn-primary">Update Profile</button>
+                        <div id="profile-message" class="message"></div>
+                    </form>
+                </section>
+            </div>
+        </div>
+    </div>
+
+    <!-- Upload Paper Modal -->
+    <div id="upload-modal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeUploadModal()">&times;</span>
+            <h2>📤 Upload Research Paper</h2>
+            <form id="upload-form">
+                <div class="form-group">
+                    <label>Title *</label>
+                    <input type="text" id="paper-title" required>
+                </div>
+                <div class="form-group">
+                    <label>Abstract</label>
+                    <textarea id="paper-abstract" rows="4"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Keywords (comma-separated)</label>
+                    <input type="text" id="paper-keywords">
+                </div>
+                <div class="form-group">
+                    <label>Category</label>
+                    <input type="text" id="paper-category">
+                </div>
+                <div class="form-group">
+                    <label>Domain</label>
+                    <input type="text" id="paper-domain">
+                </div>
+                <div class="form-group">
+                    <label>PDF File *</label>
+                    <input type="file" id="paper-file" accept=".pdf" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Upload Paper</button>
+                <div id="upload-message" class="message"></div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Review Modal -->
+    <div id="review-modal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeReviewModal()">&times;</span>
+            <h2>✍️ Submit Review</h2>
+            <div id="review-paper-info"></div>
+            <form id="review-form">
+                <input type="hidden" id="review-paper-id">
+                <div class="form-group">
+                    <label>Review Text *</label>
+                    <textarea id="review-text" rows="10" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Rating (1-5)</label>
+                    <input type="number" id="review-rating" min="1" max="5" step="0.5">
+                </div>
+                <button type="submit" class="btn btn-primary">Submit Review</button>
+                <div id="review-message" class="message"></div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Feedback Modal -->
+    <div id="feedback-modal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeFeedbackModal()">&times;</span>
+            <h2>⭐ Rate Review</h2>
+            <form id="feedback-form">
+                <input type="hidden" id="feedback-review-id">
+                <div class="form-group">
+                    <label>Rating (1-5)</label>
+                    <input type="number" id="feedback-rating" min="1" max="5" step="0.5">
+                </div>
+                <div class="form-group">
+                    <label>Feedback Text</label>
+                    <textarea id="feedback-text" rows="4"></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">Submit Feedback</button>
+                <div id="feedback-message" class="message"></div>
+            </form>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
