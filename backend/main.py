@@ -341,6 +341,56 @@ def create_assignment(
     )
     db.add(db_assignment)
     
+
+    @app.post("/papers/{paper_id}/assign")
+    def assign_reviewer_to_paper(
+        paper_id: int,
+        assignment: ReviewAssignmentCreate,
+        current_user: User = Depends(get_current_user),
+        db: Session = Depends(get_db)
+    ):
+        """Assign a reviewer to a paper (author or admin only)"""
+        paper = db.query(Paper).filter(Paper.id == paper_id).first()
+        if not paper:
+            raise HTTPException(status_code=404, detail="Paper not found")
+        
+        # Allow author or admin to assign
+        if current_user.id != paper.author_id and current_user.role != "admin":
+            raise HTTPException(status_code=403, detail="Not authorized")
+        
+        # Check if reviewer exists
+        reviewer = db.query(User).filter(User.id == assignment.reviewer_id).first()
+        if not reviewer or reviewer.role != "reviewer":
+            raise HTTPException(status_code=404, detail="Reviewer not found")
+        
+        # Check if already assigned
+        existing = db.query(ReviewAssignment).filter(
+            ReviewAssignment.paper_id == paper_id,
+            ReviewAssignment.reviewer_id == assignment.reviewer_id
+        ).first()
+        if existing:
+            raise HTTPException(status_code=400, detail="Reviewer already assigned")
+        
+        # Create assignment
+        db_assignment = ReviewAssignment(
+            paper_id=paper_id,
+            reviewer_id=assignment.reviewer_id,
+            deadline=assignment.deadline,
+            status="assigned"
+        )
+        db.add(db_assignment)
+        paper.status = "under_review"
+        db.commit()
+        db.refresh(db_assignment)
+        
+        # Log the action
+        log = AuditLog(user_id=current_user.id, action="assign_reviewer", resource_type="assignment", resource_id=db_assignment.id)
+        db.add(log)
+        db.commit()
+        
+        return {"message": "Reviewer assigned successfully", "assignment_id": db_assignment.id}
+
+    
     # Update paper status
     paper.status = "under_review"
     

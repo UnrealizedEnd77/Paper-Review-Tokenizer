@@ -265,6 +265,35 @@
             </form>
         </div>
     </div>
+    <!-- Add this modal to your index.html, after the other modals -->
+
+<!-- Assign Reviewer Modal -->
+<div id="assign-modal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>Assign Reviewer</h2>
+            <button class="close-btn" onclick="closeAssignModal()">×</button>
+        </div>
+        <form id="assign-form">
+            <input type="hidden" id="assign-paper-id">
+            
+            <div class="form-group">
+                <label for="assign-reviewer-id">Select Reviewer *</label>
+                <select id="assign-reviewer-id" required>
+                    <option value="">Loading reviewers...</option>
+                </select>
+            </div>
+            
+            <div id="assign-message"></div>
+            
+            <div class="form-actions">
+                <button type="button" class="btn btn-secondary" onclick="closeAssignModal()">Cancel</button>
+                <button type="submit" class="btn btn-primary">Assign Reviewer</button>
+            </div>
+        </form>
+    </div>
+</div>
+
 
     <script src="app.js"></script>
 </body>
